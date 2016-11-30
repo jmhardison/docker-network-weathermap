@@ -9,26 +9,24 @@ MAINTAINER Jonathan Hardison <jmh@jonathanhardison.com>
 #VOLUME ["/var/something"]
 
 #Expose used ports
-EXPOSE 80
+#EXPOSE 80
 
 #ENV
 ENV DEBIAN_FRONTEND noninteractive
 
-#RUN
-RUN apt-get update && apt-get install -y php7.0-cli unzip
-
 #ADD 'latest' release.
 ADD https://github.com/howardjones/network-weathermap/releases/download/version-0.98/php-weathermap-0.98.zip /opt/php-weathermap.zip
 
-#Extract
-RUN  unzip /opt/php-weathermap.zip -d /opt
-
-RUN rm -rf /opt/php-weathermap.zip
-
-#Remove components
-RUN apt-get remove -y unzip
-
-
+#RUN
+RUN apt-get update && apt-get install -y php7.0-cli unzip imagemagick rrdtool xsltproc php-pear php-gd && \
+    #Extract
+    unzip /opt/php-weathermap.zip -d /opt && \
+    rm -rf /opt/php-weathermap.zip && \
+    #Remove components
+    apt-get remove -y unzip && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    apt-get autoremove -y && \
+    apt-get clean
 
 WORKDIR /opt/weathermap
 
